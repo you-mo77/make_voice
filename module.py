@@ -1,5 +1,6 @@
 import numpy as np
 import soundfile as sf
+import matplotlib.pyplot as plt
 
 # 基底音作成 (A, f, sec, fs -> 基底音)
 def make_base_voice(A, f, sec, fs):
@@ -22,7 +23,7 @@ def make_voice_cords(A, f, sec, fs, base_voice, n):
     overtone += 1.2 * A * np.sin(2 * np.pi * 3 * f * t)
     if n >= 4:
         for i in range(4,n+1):
-            overtone += 1.2 * (30 - i) / 30 * np.sin(2 * np.pi * i * f * t)
+            overtone += 1.2 * (n - i) / 30 * np.sin(2 * np.pi * i * f * t)
 
     # 声帯音声へ
     voice_cords = base_voice + overtone
@@ -39,13 +40,25 @@ def sound_output(sound:np.ndarray, fs, fname):
 
     return
 
+# スペクトル表示(試験用)
+def show_spectrum(sound, fs):
+    # フーリエ変換(スペクトルへ)
+    spectrum = np.fft.fft(sound)
+
+    # x軸生成
+    x_axis = np.linspace(0, fs, fs)
+    print(x_axis.shape)
+
+    # グラフ生成
+    plt.plot(x_axis, abs(spectrum))
+    
+    # グラフ表示
+    plt.show()
+    return
+
 # 実行関数
 def main(A, f, sec, fs, n, fname):
     base_voice = make_base_voice(A, f, sec, fs)
     voice_cards = make_voice_cords(A, f, sec, fs, base_voice, n)
     sound_output(voice_cards, fs, fname)
-
-
-
-
-
+    #show_spectrum(voice_cards, fs)
